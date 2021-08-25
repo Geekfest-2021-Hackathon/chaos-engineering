@@ -13,7 +13,7 @@ Please answer the following 3 questions with information about your project. Whe
 
 
 
-## 3. What did your team learn from participating in this hackathon? 
+## 3. What did your team learn from participating in this hackathon?
 
 
 
@@ -21,4 +21,3 @@ Please answer the following 3 questions with information about your project. Whe
 
 # Project ReadMe
 Filling in this section is completely up to you, let readers know about the technical details of your project!
-
