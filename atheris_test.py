@@ -2,7 +2,7 @@ from inspect import signature
 from math import sqrt
 import atheris
 
-with atheris.insturment_imports():
+with atheris.instrument_imports():
     import sys
 
 
@@ -13,7 +13,7 @@ def get_sum_then_square_root(x, y):
     print(f"sqrt({add}) = {result}")
 
 
-@atheris.insturment_func
+@atheris.instrument_func
 def fuzzy_testing(data):
     sig = signature(get_sum_then_square_root)
     args = []

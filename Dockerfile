@@ -4,6 +4,6 @@ COPY . /app
 
 RUN cd app
 
-RUN pip install -r requirements.txt
+RUN pip install -r /app/requirements.txt
 
 CMD ["/bin/sh"]
