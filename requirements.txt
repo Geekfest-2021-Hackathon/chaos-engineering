@@ -2,3 +2,4 @@ atheris
 pre-commit
 hypothesis
 pytest
+hypothesis[cli]
