@@ -1,2 +1,4 @@
 atheris
 pre-commit
+hypothesis
+pytest
