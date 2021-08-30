@@ -7,7 +7,10 @@ from hypothesis import given, note, settings, infer
 from hypothesis.strategies import text
 from math import sqrt
 
+from functions import not_kirby, get_sum_then_square_root
 
+
+# using infer to auto-determine strategy based on the annotated types
 @given(x=infer, y=infer)
 def test_sum_then_square_root(x: int, y: int):
     test_sum = x + y
@@ -21,41 +24,6 @@ def test_sum_then_square_root(x: int, y: int):
 @settings(max_examples=1000)
 def test_not_kirby(s: str):
     assert not_kirby(s)
-
-
-def get_sum_then_square_root(x: int, y: int):
-    """
-    Performs the sum of x and y, then calculates the square root of the result
-
-    :param x: first int
-    :param y: second int
-    :return: None
-    """
-    add = x + y
-
-    # --- Uncomment this block to fix the error hypothesis detects ---
-    # if add < 0:
-    #     return None
-
-    result = sqrt(add)
-    return result
-
-
-def not_kirby(s: str):
-    note(
-        f"String received: {s}"
-    )  # This will get printed only if Hypothesis finds a problem or is running in verbose
-    if len(s) < 5:
-        return True
-
-    if s[0] == "k":
-        if s[1] == "i":
-            if s[2] == "r":
-                if s[3] == "b":
-                    if s[4] == "y":
-                        raise ValueError("Kirby is not accepted by this function.")
-
-    return True
 
 
 if __name__ == "__main__":

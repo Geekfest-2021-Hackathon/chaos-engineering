@@ -2,3 +2,7 @@
 venv/
 .hypothesis/
 __pycache__/
+.pytest_cache/
+
+# atheris generated files
+crash*
