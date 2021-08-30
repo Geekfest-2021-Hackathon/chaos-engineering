@@ -1,6 +1,5 @@
 
 
-
 # Using Docker 
 
 
@@ -11,6 +10,12 @@ docker build -t chaosdev .
 docker run -it -v ${PWD}:/app/ chaosdev bash
 
 ````
+
+If behind proxy, try ``docker build --build-arg http_proxy=$env:http_proxy --build-arg https_proxy=$env:https_proxy -t chaosdev .`` or some equivalent syntax, depending on your terminal.
+
+#### Don't have Docker
+
+You can still clone the repository and create a virtual environment, then run ``pip install -r requirements.txt``. Just note that atheris (libFuzzer specifically) is not available on Windows, which is why the docker setup is preferred.
 
 ## Samples
 
@@ -24,7 +29,7 @@ After starting the container run ``cd /app/samples/`` to change into the directo
 
 ### First test
 
-Run the fuzzer with ``python atheris_test.py``. A bug is quickly found:
+Run the fuzzer with ``python atheris_1.py``. A bug is quickly found:
 ````text
 a. -4342 + -4342 = -8684
 
