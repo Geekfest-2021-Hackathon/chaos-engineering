@@ -3,3 +3,6 @@ pre-commit
 hypothesis
 pytest
 hypothesis[cli]
+fastapi
+uvicorn
+pydantic
