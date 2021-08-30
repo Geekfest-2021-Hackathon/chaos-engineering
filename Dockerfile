@@ -6,4 +6,4 @@ WORKDIR /app
 
 RUN pip install --upgrade pip && pip install -r /app/requirements.txt
 
-CMD ["bash"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9060"]
