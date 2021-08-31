@@ -10,7 +10,7 @@ WORKDIR /app
 
 EXPOSE 9060
 
-RUN apt-get update && apt-get install vim bsdmainutils
+RUN apt-get update && apt-get install -y vim bsdmainutils
 
 RUN echo 'export PS1="chaos> "' >> /root/.bashrc
 
