@@ -18,6 +18,24 @@ class Item(BaseModel):
     tax: Optional[float] = None
 
 
+def not_kirby(s: str):
+    """Returns True as long as the given text is not 'kirby'"""
+
+    print(s)
+
+    if len(s) < 5:
+        return True
+
+    if s[0] == "k":
+        if s[1] == "i":
+            if s[2] == "R":
+                if s[3] == "b":
+                    if s[4] == "Y":
+                        raise ValueError(f"{s} is not accepted by this function.")
+
+    return True
+
+
 @app.get("/")
 def read_root():
     return {"Hello": "Chaos"}
@@ -40,13 +58,19 @@ def read_item(item_id: int, q: Optional[str] = None):
     return {"item_id": item_id, "q": q}
 
 
+@app.get("/not-kirby/{s}")
+def kirb(s: str):
+    not_kirby(s)
+
+
 @app.post("/items/")
 @app.post("/items", include_in_schema=False)
 async def create_item(item: Item):
 
-
     print(item.dict())
     return item
+
+
 #
 # @app.post("/models/")
 # async def create_model(model: Model):

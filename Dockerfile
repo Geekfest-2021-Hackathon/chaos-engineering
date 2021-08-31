@@ -10,6 +10,8 @@ WORKDIR /app
 
 EXPOSE 9060
 
+RUN apt-get update && apt-get install vim bsdmainutils
+
 RUN echo 'export PS1="chaos> "' >> /root/.bashrc
 
 CMD ["uvicorn", "samples.apifuzzer.main:app", "--host", "0.0.0.0", "--port", "9060"]

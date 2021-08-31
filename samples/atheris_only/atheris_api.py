@@ -42,8 +42,8 @@ def str_test(data):
 
 
 if __name__ == "__main__":
-    atheris.Setup(sys.argv, api_fuzzy_testing)
-    atheris.Fuzz()
+    # atheris.Setup(sys.argv, api_fuzzy_testing)
+    # atheris.Fuzz()
 
     atheris.Setup(sys.argv, str_test)
     atheris.Fuzz()
