@@ -30,8 +30,9 @@ def kirb(s: str):
 
 @atheris.instrument_func
 def api_fuzzy_testing(data):
-    fdp = atheris.FuzzedDataProvider(data)
-    get_sum_then_square_root(fdp.ConsumeInt(4), fdp.ConsumeInt(4))
+    x = atheris.FuzzedDataProvider(data)
+    y = atheris.FuzzedDataProvider(data)
+    get_sum_then_square_root(x.ConsumeInt(4), y.ConsumeInt(4))
 
 
 if __name__ == "__main__":
