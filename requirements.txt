@@ -1,8 +1,7 @@
+APIFuzzer
 atheris
-pre-commit
+fastapi[all]
 hypothesis
-pytest
 hypothesis[cli]
-fastapi
-uvicorn
-pydantic
+pre-commit
+pytest

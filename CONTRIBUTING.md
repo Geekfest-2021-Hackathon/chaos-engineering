@@ -7,7 +7,17 @@
 
 docker build -t chaosdev . 
 
+# run it and start bash terminal
 docker run -it -v ${PWD}:/app/ chaosdev bash
+
+# run it normally (detached) to start the API, then connect to it with a bash terminal
+docker run -d -v ${PWD}:/app/ -p 9060:9060 --rm --name chaosdev chaosdev
+
+# connect to running container
+docker exec -it chaosdev bash
+
+# check logs
+docker logs chaosdev -f
 
 ````
 
@@ -276,4 +286,12 @@ This seems to generally work combining both (as in the bytes get generated then 
 However even after letting it run for a while it's not finding the bad input. For comparison purposes the relevant 'atheris only' test (see ``fuzz_only.py``) finds the bad input within the few first seconds.
 
 This (along with this [discussion](https://github.com/google/atheris/issues/20) and [commit](https://github.com/google/atheris/commit/ee02c830f620fb085fb0260f6a8747fe15d21fbd) on the atheris repo) seem to indicate they don't work that well together, and for coverage guided fuzzing using atheris provides better results.
+
+## Testing with APIFuzzer
+
+- Build and run container -> docker run -d -v ${PWD}:/app/ -p 9060:9060 --rm --name chaosdev chaosdev
+- Connect to container -> docker exec -it chaosdev bash
+- Go to ``samples/apifuzzer``
+- If needed, json spec can be retrieved with ``curl http://localhost:9060/openapi.json > api-spec.json``
+- Run ``APIFuzzer -s api-spec.json -u http://localhost:9060/ -r reports/``
 
