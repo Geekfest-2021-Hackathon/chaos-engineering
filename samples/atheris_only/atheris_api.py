@@ -2,11 +2,11 @@
 Sample using atheris to find bugs in a FastAPI application
 """
 import atheris
+from fastapi import FastAPI
+from atheris_1 import get_sum_then_square_root
+from atheris_str import not_kirby
 
 with atheris.instrument_imports():
-    from fastapi import FastAPI
-    from atheris_1 import get_sum_then_square_root
-    from atheris_str import not_kirby
     import sys
 
 
