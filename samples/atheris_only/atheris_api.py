@@ -29,9 +29,9 @@ def kirb(s: str):
 
 
 @atheris.instrument_func
-def api_fuzzy_testing(data1, data2):
-    x = atheris.FuzzedDataProvider(data1)
-    y = atheris.FuzzedDataProvider(data2)
+def api_fuzzy_testing(data):
+    x = atheris.FuzzedDataProvider(data)
+    y = atheris.FuzzedDataProvider(data)
     get_sum_then_square_root(x.ConsumeInt(4), y.ConsumeInt(4))
 
 
