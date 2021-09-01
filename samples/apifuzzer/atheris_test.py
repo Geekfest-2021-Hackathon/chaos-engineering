@@ -17,9 +17,10 @@ client = TestClient(app)
 def str_test(data):
     s = atheris.FuzzedDataProvider(data)
     random_str = s.ConsumeUnicodeNoSurrogates(sys.maxsize)
-    response = client.get(url=f"{API_URL}/not-kirby/{random_str}")
+    url = f"{API_URL}/not-kirby/{random_str}"
+    response = client.get(url=url)
 
-    assert response.status_code in [200]
+    assert response.status_code in [200], f"URL: {url}"
 
 
 if __name__ == "__main__":
