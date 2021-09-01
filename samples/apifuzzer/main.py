@@ -21,7 +21,7 @@ class Item(BaseModel):
 def not_kirby(s: str):
     """Returns True as long as the given text is not 'kirby'"""
 
-    print(s)
+    # print(s)
 
     if len(s) < 5:
         return True
