@@ -9,7 +9,6 @@ with atheris.instrument_imports():
     import sys
     from main import app
 
-API_URL = "http://127.0.0.1:9060"
 client = TestClient(app)
 
 
@@ -18,7 +17,7 @@ def str_test(data):
     s = atheris.FuzzedDataProvider(data)
     random_str = s.ConsumeUnicodeNoSurrogates(sys.maxsize)
     random_str = random_str.replace("/", "")
-    url = f"{API_URL}/not-kirby/{random_str}"
+    url = f"/not-kirby/{random_str}"
     response = client.get(url=url)
 
     assert response.status_code in [200], f"URL: {url}"
