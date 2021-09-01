@@ -58,6 +58,11 @@ def read_item(item_id: int, q: Optional[str] = None):
     return {"item_id": item_id, "q": q}
 
 
+@app.get("/not-kirby/")
+def blank_kirb():
+    return "No string provided."
+
+
 @app.get("/not-kirby/{s}")
 def kirb(s: str):
     not_kirby(s)
