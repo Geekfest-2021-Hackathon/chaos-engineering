@@ -21,8 +21,8 @@ def int_and_str_func(x: int, s: str):
     if len(s) < 5:
         return True
 
-    if len(s) == x:
-        error = f"{s} has a length of {x}"
+    if x == 2048:
+        error = "x cannot be 2048"
         raise ValueError(error)
 
     if s[0] == "k":
