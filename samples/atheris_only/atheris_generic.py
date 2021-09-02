@@ -64,8 +64,12 @@ def fuzzy_testing(data):
     TESTED_FUNC(*args)
 
 
-if __name__ == "__main__":
-    # global TESTED_FUNC
-    TESTED_FUNC = int_and_str_func
+def main(my_func: callable):
+    global TESTED_FUNC
+    TESTED_FUNC = my_func
     atheris.Setup(sys.argv, fuzzy_testing)
     atheris.Fuzz()
+
+
+if __name__ == "__main__":
+    main(int_and_str_func)
