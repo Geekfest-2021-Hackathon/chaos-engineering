@@ -17,15 +17,22 @@ with atheris.instrument_imports():
     import sys
 
 
-def int_and_str_func(x: int, y: str):
-    """
-    Performs the sum of x and y, then calculates the square root of the result
+def int_and_str_func(x: int, s: str):
+    if len(s) < 5:
+        return True
 
-    :param x: first int
-    :param y: second int
-    :return: result: float
-    """
-    print(f"{x}: {y}")
+    if len(s) == x:
+        error = f"{s} has a length of {x}"
+        raise ValueError(error)
+
+    if s[0] == "k":
+        if s[1] == "i":
+            if s[2] == "R":
+                if s[3] == "b":
+                    if s[4] == "Y":
+                        error = f"{s} is not accepted by this function."
+                        print(error)
+                        raise ValueError(error)
 
 
 @atheris.instrument_func
