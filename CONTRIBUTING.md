@@ -295,3 +295,11 @@ This (along with this [discussion](https://github.com/google/atheris/issues/20) 
 - If needed, json spec can be retrieved with ``curl http://localhost:9060/openapi.json > api-spec.json``
 - Run ``APIFuzzer -s api-spec.json -u http://localhost:9060/ -r reports/``
 
+
+## atheris - multiple inputs
+
+Save generated crash files, use -artifact_prefix param
+To reuse crash files, pass the directory (CORPUS_DIR is the last argument in function call, not a flag)
+
+# reuse stuff in crashes, save new ones in crashes
+
