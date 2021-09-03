@@ -32,7 +32,21 @@ The customer experience is directly impacted by the quality of the software deve
 # Project ReadMe
 Filling in this section is completely up to you, let readers know about the technical details of your project!
 
-## Atheris
+## Chaos Engineering
+This is the principle of testing software's ability to handle unexpected conditions. This includes connectivity issues, servers going down, unexpected user input and other factors. The goal is to introduce "chaos" into the system, to see if the service can handle real-world conditions. This is useful as there is only so much a developer can think of when testing their code, and often issues are only found after deployment. By introducing more variability, these issues can be found sooner.
+
+Some tools available for chaos-engineering:
+- [Chaos Monkey](https://netflix.github.io/chaosmonkey/)
+- [Litmus Chaos](https://litmuschaos.io)
+
+One sub-catergory of chaos engineering is Fuzz Testing, which is what we chose to focus on for this hackathon.
+
+## Fuzz Testing
+Also known as fuzzing, this is automated software testing that uses randomly generated data to try and break code. Typically, when writing test cases a developer will provide their own data, aiming to cover as many scenarios as possible. But, writing tests this way means that there are always values that are not covered. Instead of using fixed data, fuzzing tools will randomly generate new values and see if they can generate unhandled errors. 
+
+The fuzzing libraries that we tried are described below. Examples can also be found in the `samples` folder.
+
+### Atheris
 Documentation: https://github.com/google/atheris
 
 Atheris is a Python fuzzing engine that uses code coverage when generating its test data. By doing this, it is not
@@ -97,3 +111,83 @@ A few notes about the output:
 - `NEW`: means that atheris found a value that went further into the code than before
 - `REDUCE`: means that atheris found a simpler value that can reach the same depth as previous attempts
 - `pulse`: atheris will produce pulse messages every once in a while to indicate that it is still working
+
+
+### Hypothesis
+Documentation: https://hypothesis.readthedocs.io/en/latest/
+
+Hypothesis is a python library to create unit tests with fuzzing. As such, it handles generating data for the tests, and covers a large number of scenarios than typical testing. While this library does not use code coverage like Atheris, it has its own advantages as well.
+
+For example, if we use hypothesis to test the function below (found in `samples/hypothesis/functions.py`):
+```
+def get_sum_then_square_root(x: int, y: int):
+    """
+    Performs the sum of x and y, then calculates the square root of the result
+
+    :param x: first int
+    :param y: second int
+    :return: None
+    """
+    add = x + y
+
+    # --- Uncomment this block to fix the error hypothesis detects ---
+    # if add < 0:
+    #     return None
+
+    result = math.sqrt(add)
+    return result
+```
+
+We get the following output:
+```
+Falsifying example: test_sum_then_square_root(
+    x=0, y=-1,
+)
+```
+
+Here, while randomly generating values, Hypothesis found that assigning a negative value causes an unhandled error in the function. It then continued to generate values until it found the most simple ones to generate the same error, hence the output containing `x=0, y=-1`.
+
+Another nice feature of hypothesis is its ability to generate test cases automatically for a given function. For example, if you write the following in a terminal:
+
+`hypothesis write functions.get_sum_then_square_root`
+
+Then hypothesis will give the following output:
+
+```
+# This test code was written by the `hypothesis.extra.ghostwriter` module
+# and is provided under the Creative Commons Zero public domain dedication.
+
+import functions
+from hypothesis import given, strategies as st
+
+get_sum_then_square_root_operands = st.integers()
+
+
+@given(
+    a=get_sum_then_square_root_operands,
+    b=get_sum_then_square_root_operands,
+    c=get_sum_then_square_root_operands,
+)
+def test_associative_binary_operation_get_sum_then_square_root(a, b, c):
+    left = functions.get_sum_then_square_root(
+        x=a, y=functions.get_sum_then_square_root(x=b, y=c)
+    )
+    right = functions.get_sum_then_square_root(
+        x=functions.get_sum_then_square_root(x=a, y=b), y=c
+    )
+    assert left == right, (left, right)
+
+
+@given(a=get_sum_then_square_root_operands, b=get_sum_then_square_root_operands)
+def test_commutative_binary_operation_get_sum_then_square_root(a, b):
+    left = functions.get_sum_then_square_root(x=a, y=b)
+    right = functions.get_sum_then_square_root(x=b, y=a)
+    assert left == right, (left, right)
+
+
+@given(a=get_sum_then_square_root_operands)
+def test_identity_binary_operation_get_sum_then_square_root(a):
+    assert a == functions.get_sum_then_square_root(x=a, y=0)
+```
+
+These automatically generated tests can then be used in the future to perform testing on the function.
