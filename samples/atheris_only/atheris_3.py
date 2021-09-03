@@ -52,17 +52,20 @@ def fuzzy_testing(data):
     :return: None
     """
     sig = signature(get_sum_then_square_root)
+    fdp = atheris.FuzzedDataProvider(data)
     args = []
+
+    # Determine how to split the data based on input parameters
+    portion = int(len(data) / len(sig.parameters))
 
     # Generate the correct amount and types of input parameters for the function
     for param in sig.parameters:
         if sig.parameters[param].annotation == int:
-            fdp = atheris.FuzzedDataProvider(data)
-            args.append(fdp.ConsumeInt(sys.maxsize))
+            args.append(fdp.ConsumeInt(portion))
     # Run the function with the generated data
     get_sum_then_square_root(*args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     atheris.Setup(sys.argv, fuzzy_testing)
     atheris.Fuzz()
