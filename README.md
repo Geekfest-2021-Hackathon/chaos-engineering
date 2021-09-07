@@ -138,7 +138,7 @@ A few notes about the output:
 Hypothesis is a python library for property-based testing, used to create better unit tests with fuzzing and strategies instead of fixed specific values. As such, it handles generating data for the tests, and covers a large number of scenarios, in addition to typical testing.
 
 For example, let's say we want to test the function below (found in `samples/hypothesis/functions.py`):
-````python`
+```python
 def get_sum_then_square_root(x: int, y: int):
     add = x + y
 
@@ -148,7 +148,7 @@ def get_sum_then_square_root(x: int, y: int):
 
     result = math.sqrt(add)
     return result
-````
+```
 
 We want to make sure this function works with any combinations of integers. Writing that is very easy using the library:
 ````python
