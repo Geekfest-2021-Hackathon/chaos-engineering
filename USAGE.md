@@ -402,7 +402,6 @@ Additional notes:
 
 ### Hypothesis against pydantic & fastapi
 
-
 Hypothesis can build a strategy to generate objects based on a class definition, in this case the [pydantic](https://pydantic-docs.helpmanual.io/) model. See https://pydantic-docs.helpmanual.io/hypothesis_plugin/ for details.
 
 This means we can use the same test client but feed it random (but schema compliant) data instead of pre-defined test data.

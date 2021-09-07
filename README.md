@@ -207,7 +207,7 @@ There are 2 main ways to use it (see [FAQ](https://schemathesis.readthedocs.io/e
 - Via a CLI interface (install via pip or using the provided docker image). Simplest for basic cases and will work with APIs in any language, as long as they expose a Swagger/OpenAPI spec.
 - Via the python interface, by integrating the library to existing python code. This makes it a bit easier to configure the behavior and test apps written in python without requiring the API to be running already. There is support for ASGI (e.g. fastapi) and WSGI (e.g. Flask) apps as well.
 
-Check out [CONTRIBUTING.md](USAGE.md) for more details on features and usage.
+Check out [USAGE.md](USAGE.md) for more details on features and usage.
 
 ## Additional references
 
