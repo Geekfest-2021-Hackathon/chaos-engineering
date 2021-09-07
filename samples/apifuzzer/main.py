@@ -1,14 +1,14 @@
+"""
+Sample API (fastapi based)  used to test API fuzzers. API normally starts with the container,
+ but can also be used by test clients.
+"""
+
 from typing import Optional
 
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 app = FastAPI()
-
-
-class Model(BaseModel):
-    name: str
-    count: int
 
 
 class Item(BaseModel):
@@ -43,7 +43,6 @@ def read_root():
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Optional[str] = None):
-
     if item_id > 100:
         raise RuntimeError(f"This id ({item_id}) is not allowed - too big")
 
@@ -71,13 +70,5 @@ def kirb(s: str):
 @app.post("/items/")
 @app.post("/items", include_in_schema=False)
 async def create_item(item: Item):
-
-    print(item.dict())
+    # print(f"Creating item: {item.dict()}...")
     return item
-
-
-#
-# @app.post("/models/")
-# async def create_model(model: Model):
-#     print(model.dict())
-#     return model

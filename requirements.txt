@@ -3,5 +3,7 @@ atheris
 fastapi[all]
 hypothesis
 hypothesis[cli]
+locust
 pre-commit
 pytest
+# schemathesis   # slows down the build because of dependency resolution conflicts. Installed separately.

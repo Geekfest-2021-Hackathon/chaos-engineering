@@ -1,5 +1,5 @@
 """
-Sample using atheris to find bugs in a FastAPI application
+Sample using atheris to find bugs in a FastAPI application (fuzzing directly into the endpoints)
 """
 import atheris
 from fastapi.testclient import TestClient
@@ -16,7 +16,9 @@ client = TestClient(app)
 def str_test(data):
     s = atheris.FuzzedDataProvider(data)
     random_str = s.ConsumeUnicodeNoSurrogates(sys.maxsize)
-    random_str = random_str.replace("/", "")
+    random_str = random_str.replace(
+        "/", ""
+    )  # avoid too many 404s due to slashes in the generated data
     url = f"/not-kirby/{random_str}"
     response = client.get(url=url)
 

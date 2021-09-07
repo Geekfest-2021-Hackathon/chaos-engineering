@@ -7,54 +7,72 @@ Please answer the following 3 questions with information about your project. Whe
 
 Software bugs/faults are often caused by edge cases, untested scenarios or code paths that no one thought of or tested against, often because of the associated cost vs likelihood.
 
-This project is about exploring chaos engineering (testing) techniques, and how to use them to more thoroughly test written software by adding a randomness element to the test cases, ideally without having to write too much extra code.
+This project is about exploring chaos engineering tools and techniques, and how to use them to more thoroughly test written software by adding a randomness element to the test cases, ideally without having to write too much extra code.
 
 The customer experience is directly impacted by the quality of the software developed/maintained internally, and one way to improve robustness is to prepare for and experiment as much chaos as possible during development (as opposed to reacting to a customer issue or production outage).
 
 
 ## 2. What technology (both hardware and software) did your team use to accomplish your goal?
 
-- Python
+- Python 3.9
 - [Atheris](https://github.com/google/atheris)
 - [Hypothesis](https://hypothesis.readthedocs.io/)
 - Openshift
 - [Docker](https://www.docker.com)
 
 
-
-
 ## 3. What did your team learn from participating in this hackathon?
 
 - TBD
 
-
+----
 
 # Project ReadMe
 Filling in this section is completely up to you, let readers know about the technical details of your project!
 
-## Chaos Engineering
-This is the principle of testing software's ability to handle unexpected conditions. This includes connectivity issues, servers going down, unexpected user input and other factors. The goal is to introduce "chaos" into the system, to see if the service can handle real-world conditions. This is useful as there is only so much a developer can think of when testing their code, and often issues are only found after deployment. By introducing more variability, these issues can be found sooner.
+## What is Chaos Engineering?
 
-Some tools available for chaos-engineering:
-- [Chaos Monkey](https://netflix.github.io/chaosmonkey/)
-- [Litmus Chaos](https://litmuschaos.io)
+It can be defined as the principle of testing software's ability to handle unexpected conditions (chaos). This includes connectivity issues, servers going down, unexpected user input and other common factors of bugs and outages.
 
-One sub-catergory of chaos engineering is Fuzz Testing, which is what we chose to focus on for this hackathon.
+The goal is to introduce "chaos" into the system, see how it reacts, and correct it if needed. This is useful as there is only so much a developer can think of when testing their code (computers are pretty good at this), and often issues are only found after deployment. By introducing more variability during development and testing, these issues can be found sooner.
+
+[Chaos engineering](https://en.wikipedia.org/wiki/Chaos_engineering) is a [deep](https://www.oreilly.com/library/view/chaos-engineering/9781491988459/) topic and there are many books, techniques, tools about it and ways to implement them.
+
+To set an initial scope, we are interested on the following ways of introducing chaos - ideally applicable to python projects:
+
+- At the application level: negative testing of an application through fuzzing (randomized input to methods/functions, entry points, api endpoints, etc.)
+- At the "service" layer, in a distributed system: regularly testing throughput, introducing network failures, latency, unavailability of components, etc.
+
+One sub-category of chaos engineering is Fuzz Testing, which is what we chose to focus on for this hackathon.
 
 ## Fuzz Testing
-Also known as fuzzing, this is automated software testing that uses randomly generated data to try and break code. Typically, when writing test cases a developer will provide their own data, aiming to cover as many scenarios as possible. But, writing tests this way means that there are always values that are not covered. Instead of using fixed data, fuzzing tools will randomly generate new values and see if they can generate unhandled errors. 
 
-The fuzzing libraries that we tried are described below. Examples can also be found in the `samples` folder.
+Also known as fuzzing, this is automated software testing that uses *randomly* generated data to try and break code. Typically, when writing test cases a developer will provide their own data, aiming to cover as many scenarios as possible. But, writing tests this way means that there are always values that are not covered. Instead of using fixed data, fuzzing tools will randomly generate new values and see if they can generate unhandled errors.
+
+Fuzzing by itself can also be a complex topic (see the [fuzzing book](https://www.fuzzingbook.org/)). Some general notes:
+
+- Fuzzers typically generate raw bytes, and often provide an interface to get that data in a specific type (integer, string, bool, etc.)
+- The goal may be to find inputs that cause crashes/exceptions, or to validate specific software behavior (e.g. using assertions and writing test-suites that consume the generated data)
+- Coverage-guided fuzzing implies some monitoring of the code coverage while the tests are running. That information is used to guide the data generation, which usually results in more efficient testing. Issues are also more likely to be found as the tools try to cover as many code paths as possible.
+- Replay: failures found during fuzzing can be saved and reused/replayed at a later time (e.g. for regression testing, ).
+- Minimize: some fuzzers after finding a failing input will try to reproduce it while 'reducing' the input, in order to provide the smallest, simplest way to reproduce the issue.
+
+The fuzzing libraries that were explored are described below - high level summaries.
+
+The technical details are documented in [USAGE.md](USAGE.md), along with [sample code](/samples) to follow along.
+
+----
 
 ### Atheris
-Documentation: https://github.com/google/atheris
 
-Atheris is a Python fuzzing engine that uses code coverage when generating its test data. By doing this, it is not
+> **Documentation**: https://github.com/google/atheris
+
+Atheris is a Python fuzzing engine that uses code coverage when generating its test data. It's not
 simply generating random values for testing, but is instead adapting the values provided based on how far they reach
 into the functions being tested. This way, it can find issues much faster and more thoroughly than with random values.
 
-For example, if we use atheris to perform fuzzing on the following function (found in `atheris_str.py`):
-```
+For example, if we use atheris to perform fuzzing of the following function (found in `atheris_str.py`):
+````python
 def not_kirby(s: str):
     if len(s) < 5:
         return True
@@ -66,11 +84,11 @@ def not_kirby(s: str):
                     if s[4] == "Y":
                         raise ValueError(f"{s} is not accepted by this function.")
 
-    return
-```
+    return True
+````
 
-Then we get the following output:
-```
+Then we get the following output (truncated):
+````text
 #2      INITED cov: 3 ft: 3 corp: 1/1b exec/s: 0 rss: 31Mb
 #272    NEW    cov: 5 ft: 5 corp: 2/7b lim: 6 exec/s: 0 rss: 31Mb L: 6/6 MS: 5 ShuffleBytes-CopyPart-ChangeBinInt-InsertRepeatedBytes-CrossOver-
 #2790   NEW    cov: 6 ft: 6 corp: 3/27b lim: 29 exec/s: 0 rss: 31Mb L: 20/20 MS: 3 ChangeBinInt-InsertByte-InsertRepeatedBytes-
@@ -99,13 +117,13 @@ Traceback (most recent call last):
     not_kirby(random_str)
   File "/app/samples/atheris_only/atheris_str.py", line 18, in not_kirby
     raise ValueError(f"{s} is not accepted by this function.")
-```
+````
 
 We can see that atheris successfully found a string that was not accepted by the function. This would have been
-incredibly difficult with random values alone, since it may have taken many iterations before the program happened to
-pick the string "kirby". But, because the test coverage is being used, atheris can determine that having the input start
- with "k", then "i", then "r" etc. caused the test to go deeper within the code and continued to try values containing
-these characters until it reached the error.
+incredibly difficult with random test values alone, and it may have taken *many* iterations before the program happened to
+pick the string "kiRbY". But, because the test coverage is being used, atheris can determine that having the input start
+ with "k", then "i", then "R" etc. caused the test to go deeper within the code and continued to try values containing
+these characters until it found an error.
 
 A few notes about the output:
 - `NEW`: means that atheris found a value that went further into the code than before
@@ -114,20 +132,14 @@ A few notes about the output:
 
 
 ### Hypothesis
-Documentation: https://hypothesis.readthedocs.io/en/latest/
 
-Hypothesis is a python library to create unit tests with fuzzing. As such, it handles generating data for the tests, and covers a large number of scenarios than typical testing. While this library does not use code coverage like Atheris, it has its own advantages as well.
+> **Documentation:** https://hypothesis.readthedocs.io/en/latest/
 
-For example, if we use hypothesis to test the function below (found in `samples/hypothesis/functions.py`):
-```
+Hypothesis is a python library for property-based testing, used to create better unit tests with fuzzing and strategies instead of fixed specific values. As such, it handles generating data for the tests, and covers a large number of scenarios, in addition to typical testing.
+
+For example, let's say we want to test the function below (found in `samples/hypothesis/functions.py`):
+````python`
 def get_sum_then_square_root(x: int, y: int):
-    """
-    Performs the sum of x and y, then calculates the square root of the result
-
-    :param x: first int
-    :param y: second int
-    :return: None
-    """
     add = x + y
 
     # --- Uncomment this block to fix the error hypothesis detects ---
@@ -136,58 +148,73 @@ def get_sum_then_square_root(x: int, y: int):
 
     result = math.sqrt(add)
     return result
-```
+````
 
-We get the following output:
-```
+We want to make sure this function works with any combinations of integers. Writing that is very easy using the library:
+````python
+from hypothesis import given, strategies as st
+from math import sqrt
+
+@given(x=st.integers(), y=st.integers())
+def test_sum_then_square_root(x: int, y: int):
+    test_sum = x + y
+    if test_sum < 0:
+        assert get_sum_then_square_root(x, y) is None
+    else:
+        assert get_sum_then_square_root(x, y) == sqrt(test_sum)
+
+````
+
+There are many different strategies to generate any kind of data (from primary types to user-defined models) and they can be composed together - even recursively - to create very flexible and complex test scenarios. An example would be generating random data that's still conformant to an API schema or model/class, then use that to test functionality. Check docs for more info.
+
+If we run the previous test we can see a failure and the following towards the end of the output log:
+````text
 Falsifying example: test_sum_then_square_root(
     x=0, y=-1,
 )
-```
+````
 
 Here, while randomly generating values, Hypothesis found that assigning a negative value causes an unhandled error in the function. It then continued to generate values until it found the most simple ones to generate the same error, hence the output containing `x=0, y=-1`.
 
-Another nice feature of hypothesis is its ability to generate test cases automatically for a given function. For example, if you write the following in a terminal:
-
-`hypothesis write functions.get_sum_then_square_root`
-
-Then hypothesis will give the following output:
-
-```
-# This test code was written by the `hypothesis.extra.ghostwriter` module
-# and is provided under the Creative Commons Zero public domain dedication.
-
-import functions
-from hypothesis import given, strategies as st
-
-get_sum_then_square_root_operands = st.integers()
+While this library does not use code coverage like Atheris (and can't find the error in the `not_kirby` function for example), it has its own advantages as well:
+- The API is very nice and makes it easy to write complex scenarios with little code. See all the [available strategies](https://hypothesis.readthedocs.io/en/latest/data.html)
+- It integrates with pytest, and can be easily added to existing test suites and run in CI
+- It can be used in combination with [external fuzzers](https://hypothesis.readthedocs.io/en/latest/details.html?highlight=fuzz#use-with-external-fuzzers), including atheris.
+- It can [ghostwrite tests](https://hypothesis.readthedocs.io/en/latest/ghostwriter.html) - generate tests automatically for given python code. An example is provided in the samples.
 
 
-@given(
-    a=get_sum_then_square_root_operands,
-    b=get_sum_then_square_root_operands,
-    c=get_sum_then_square_root_operands,
-)
-def test_associative_binary_operation_get_sum_then_square_root(a, b, c):
-    left = functions.get_sum_then_square_root(
-        x=a, y=functions.get_sum_then_square_root(x=b, y=c)
-    )
-    right = functions.get_sum_then_square_root(
-        x=functions.get_sum_then_square_root(x=a, y=b), y=c
-    )
-    assert left == right, (left, right)
+### APIFuzzer
 
+> **Documentation**: https://github.com/KissPeter/APIFuzzer
 
-@given(a=get_sum_then_square_root_operands, b=get_sum_then_square_root_operands)
-def test_commutative_binary_operation_get_sum_then_square_root(a, b):
-    left = functions.get_sum_then_square_root(x=a, y=b)
-    right = functions.get_sum_then_square_root(x=b, y=a)
-    assert left == right, (left, right)
+APIFuzzer is another python fuzzing tool that can be invoked from the CLI. It reads an API description (Swagger, OpenAPI schemas) and step by step fuzzes the fields to validate if the application can cope with the fuzzed parameters.
 
+*Pro*: It is very easy to install and run against a deployed server, and should be a low-effort addition to any CI workflow.
 
-@given(a=get_sum_then_square_root_operands)
-def test_identity_binary_operation_get_sum_then_square_root(a):
-    assert a == functions.get_sum_then_square_root(x=a, y=0)
-```
+*Con*: It's not the most flexible however, as there are not many ways to configure and tailor the data generation to an app's specific needs, unlike the other libraries.
 
-These automatically generated tests can then be used in the future to perform testing on the function.
+### Schemathesis
+
+> **Documentation**: https://schemathesis.readthedocs.io/en/stable/index.html
+
+Schemathesis is an API testing tool for web applications built with Open API and GraphQL specifications.
+
+It is built on top of Hypothesis and will read the API schema then generate and run test cases (using the strategies under the hood).
+
+This [very good article](https://testdriven.io/blog/fastapi-hypothesis/) goes on detail about using hypothesis and schemathesis to test a fastapi based application, for reference.
+
+There are 2 main ways to use it (see [FAQ](https://schemathesis.readthedocs.io/en/stable/faq.html)):
+- Via a CLI interface (install via pip or using the provided docker image). Simplest for basic cases and will work with APIs in any language, as long as they expose a Swagger/OpenAPI spec.
+- Via the python interface, by integrating the library to existing python code. This makes it a bit easier to configure the behavior and test apps written in python without requiring the API to be running already. There is support for ASGI (e.g. fastapi) and WSGI (e.g. Flask) apps as well.
+
+Check out [CONTRIBUTING.md](USAGE.md) for more details on features and usage.
+
+## Additional references
+
+- [Awesome python resources for testing and generating test data](https://githubmemory.com/repo/cleder/awesome-python-testing)
+- [Comparing Chaos Engineering Tools for Kubernetes Workloads](https://blog.container-solutions.com/comparing-chaos-engineering-tools)
+- [OSS-Fuzz: Continuous Fuzzing for Open Source Software](https://google.github.io/oss-fuzz/)
+- [Chaos Mesh - Orchestrate chaos experiments in Kubernetes](https://chaos-mesh.org/)
+- [Chaos Toolkit - An Open API for Chaos Engineering](https://github.com/chaostoolkit/chaostoolkit)
+- [Chaos Monkey - Netflix's resiliency test tool](https://netflix.github.io/chaosmonkey/)
+- [Litmus Chaos - Another chaos orchestrator](https://litmuschaos.io)

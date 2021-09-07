@@ -1,0 +1,17 @@
+# Causes a latency of 40 milliseconds in the network connections of the target Pods
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: delay
+spec:
+  action: delay   # network delay.
+  mode: one  # select one random pod
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      'app': 'target-api'
+  delay:
+    latency: '40ms'
+    correlation: '100'
+    jitter: '0ms'
